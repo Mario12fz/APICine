@@ -1,0 +1,49 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <nav class="navbar navbar-dark bg-dark">
+            <div class="container-fluid">
+              <a class="navbar-brand text-warning" href="#">
+                <img src="https://previews.123rf.com/images/get4net/get4net1711/get4net171100562/89002682-icono-de-c%C3%A1mara-de-cine.jpg" alt="" width="40" height="40" class="d-inline-block align-text-top rounded-circle">
+                &nbsp;
+                <strong>CineApp</strong>
+              </a>
+            </div>
+          </nav>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item" >
+            <a class="nav-link active text-warning" aria-current="page" routerLink="/home" routerLinkActive="active">Inicio</a>
+          </li>
+          <li class="nav-item" >
+            <a class="nav-link active text-warning" aria-current="page" routerLink="/reservaMovie" routerLinkActive="active">Reservar Película</a>
+          </li>
+          <li class="nav-item" *ngIf="authService.hasRole('ROLE_ADMIN')">
+            <a class="nav-link active text-warning" aria-current="page" routerLink="/categorias" routerLinkActive="active">Categorias</a>
+          </li>
+          <li class="nav-item" *ngIf="authService.hasRole('ROLE_ADMIN')">
+            <a class="nav-link active text-warning" aria-current="page" routerLink="/salas" routerLinkActive="active">Salas</a>
+          </li>
+          <li class="nav-item" *ngIf="authService.hasRole('ROLE_ADMIN')">
+            <a class="nav-link active text-warning" aria-current="page" routerLink="/peliculas" routerLinkActive="active">Peliculas</a>
+          </li>
+          <li class="nav-item" *ngIf="authService.hasRole('ROLE_ADMIN')">
+            <a class="nav-link active text-warning" aria-current="page" routerLink="/reservas" routerLinkActive="active">Reservas</a>
+          </li>
+          <li class="nav-item">
+        </ul>
+        <ul class="navbar-nav navbar-right">
+          <li>
+            <a *ngIf="!authService.isAuthenticated()" [routerLink]="['/login']" class="btn btn-outline-light">Login</a>
+          </li> 
+          <li>
+            <a (click)="logout()" *ngIf="authService.isAuthenticated()" class="btn btn-outline-danger">
+              Logout
+            </a>
+          </li>   
+        </ul> 
+      </div>
+    </div>
+  </nav>

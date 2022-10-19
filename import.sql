@@ -1,0 +1,1 @@
+INSERT INTO peliculas(nombre,sinopsi,estado,categoria) VALUES('Filemon','bla bla','D',1)

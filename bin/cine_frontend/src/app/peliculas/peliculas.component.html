@@ -1,0 +1,147 @@
+<p></p>
+<p-toast></p-toast>
+
+<div class="card">
+    <p-toolbar styleClass="mb-4 bg-primary">
+        <ng-template pTemplate="left">
+            <button pButton pRipple label="Agregar" icon="pi pi-plus" class="p-button-rounded p-button-dark bg-dark" (click)="openNew()"></button>
+            &nbsp;&nbsp;
+            <div class="p-field-checkbox">
+                <p-checkbox [(ngModel)]="checked" [binary]="true" inputId="binary" (ngModelChange)="checkChanged($event)"></p-checkbox>
+                <label for="binary">&nbsp;&nbsp;Ver Películas Inactivas</label>
+            </div>
+        </ng-template>
+        <!-- <ng-template pTemplate="right">
+            <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload>
+            <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help"></button>
+        </ng-template>
+        -->
+    </p-toolbar>
+
+    <p-table #dt [value]="peliculas" [rows]="10" [paginator]="true" [globalFilterFields]="['nombre','sinopsi','categoria','status']" responsiveLayout="scroll"
+        [(selection)]="selectedPeliculas" [rowHover]="true" dataKey="id"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [showCurrentPageReport]="true">
+        <ng-template pTemplate="caption">
+            <div class="flex align-items-center justify-content-between">
+                <h5 class="m-0">Almacén de Películas</h5>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="dt.filterGlobal( getEventValue($event), 'contains')" placeholder="Buscar..." /> 
+                </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
+                <th>Imagen</th>
+                <th pSortableColumn="sinopsi">Sinopsis</th>
+                <th pSortableColumn="fecha_inicio">Fecha Inicio <p-sortIcon field="fecha_inicio"></p-sortIcon></th>
+                <th pSortableColumn="fecha_fin">Fecha Fin</th>
+                <th pSortableColumn="hora_proyeccion">Hora de Proyección <p-sortIcon field="hora_proyeccion"></p-sortIcon></th>
+                <th pSortableColumn="precio">Precio <p-sortIcon field="precio"></p-sortIcon></th>
+                <th pSortableColumn="categoria">Categoria</th>
+                <th pSortableColumn="sala">Sala</th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-pelicula>
+            <tr>
+                <td>{{pelicula.nombre}}</td>
+                <td *ngIf="pelicula.imagen != null && pelicula.imagen != ''"><img [src]="'assets/images/peliculas/' + pelicula.imagen" [alt]="pelicula.nombre" width="100" class="shadow-4" /></td>
+                <td *ngIf="pelicula.imagen == null || pelicula.imagen == ''"><img src="assets/images/peliculas/no_image.jpg" alt="no image" width="100" class="shadow-4" /></td>
+                <td>{{pelicula.sinopsi}}</td>
+                <td>{{pelicula.fecha_inicio | date: "dd/MM/yyyy"}}</td>
+                <td>{{pelicula.fecha_fin | date: "dd/MM/yyyy"}}</td>
+                <td>{{pelicula.hora_proyeccion}}</td>
+                <td>{{pelicula.precio}}</td>
+                <td>{{pelicula.sala.codigo}}</td>
+                <td>{{pelicula.categoria.nombre}}</td>
+                <td>
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-primary mr-2" pTooltip="Editar" tooltipPosition="top" (click)="editMovie(pelicula)" *ngIf="pelicula.estado=='D'"></button>
+                    <button pButton pRipple icon="pi pi-times" class="p-button-rounded p-button-danger" pTooltip="Desactivar" tooltipPosition="top" (click)="deleteMovie(estado= 'I', pelicula)" *ngIf="pelicula.estado=='D'"></button>
+                    <button pButton pRipple icon="pi pi-check" class="p-button-rounded p-button-success" pTooltip="Activar" tooltipPosition="top" (click)="deleteMovie2(estado= 'D', pelicula)" *ngIf="pelicula.estado=='I'"></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="flex align-items-center justify-content-between">
+                Total de Películas: &nbsp; {{peliculas ? peliculas.length : 0 }} 
+            </div>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [(visible)]="productDialog" [style]="{width: '450px'}" header="{{title}}" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <img [src]="'assets/images/peliculas/' + pelicula.imagen" [alt]="pelicula.imagen" class="product-image" *ngIf="pelicula.imagen">
+        <img class="product-image" *ngIf="!pelicula.imagen">
+        <div class="field">
+            <label for="nombre">Nombre</label>
+            <input type="text" pInputText id="nombre" [(ngModel)]="pelicula.nombre" required autofocus />
+            <small class="p-error" *ngIf="submitted && !pelicula.nombre">Nombre de Película es requerido</small>
+        </div>
+        <div class="field">
+            <label for="sinopsi">Sinopsi</label>
+            <textarea id="sinopsi" pInputTextarea [(ngModel)]="pelicula.sinopsi" required rows="3" cols="20"></textarea>
+        </div>
+        <div class="field">
+            <label for="fecha_inicio">Fecha de inicio</label>
+            <input type="date" pInputText id="fecha_inicio" [(ngModel)]="pelicula.fecha_inicio" required autofocus />
+            <small class="p-error" *ngIf="submitted && !pelicula.fecha_inicio">Fecha de inicio de la pelicula es requerido</small>
+        </div>
+        <div class="field">
+            <label for="fecha_fin">Fecha de finalización</label>
+            <input type="date" pInputText id="fecha_fin" [(ngModel)]="pelicula.fecha_fin" required autofocus />
+            <small class="p-error" *ngIf="submitted && !pelicula.fecha_fin">Fecha de finalización de la pelicula es requerido</small>
+        </div>
+
+        <div class="field">
+            <label for="hora_proyeccion">Hora de la proyección</label>
+            <input type="time" pInputText id="hora_proyeccion" [(ngModel)]="pelicula.hora_proyeccion" required autofocus />
+            <small class="p-error" *ngIf="submitted && !pelicula.hora_proyeccion">Hora de la proyección de la película es requerida</small>
+        </div>
+
+        <div class="field">
+
+            <label for="salas">Sala</label>
+            <p-dropdown [(ngModel)]="pelicula.sala" optionLabel="codigo" [options]="salas" placeholder="Select">
+            </p-dropdown>
+        </div>
+
+        <div class="field">
+
+            <label for="categoria">Categorias</label>
+            <p-dropdown [(ngModel)]="pelicula.categoria" optionLabel="nombre" [options]="categorias" placeholder="Select">
+            </p-dropdown>
+        </div>
+
+        <div class="formgrid grid">
+
+            <div class="field col">
+                <label for="precio">Precio</label>
+                <p-inputNumber id="precio" [(ngModel)]="pelicula.precio" mode="currency" currency="USD" locale="en-US"></p-inputNumber>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="formFile" class="form-label">Seleccione un imagen</label>
+            <input class="form-control" type="file" id="formFile" (change)="seleccionarImagen($event)" accept="image/*">
+          </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text text-danger" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Guardar" icon="pi pi-check" *ngIf="!pelicula.id else elseBlock" class="p-button-text text-success"(click)="create()"></button>
+
+        <ng-template #elseBlock>
+
+            <button pButton pRipple label="Actualizar" icon="pi pi-check" class="p-button-text" (click)="update()"></button>
+
+        </ng-template>
+
+
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+

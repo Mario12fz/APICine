@@ -1,0 +1,23 @@
+<p-carousel [value]="peliculas" styleClass="custom-carousel" [numVisible]="3" [numScroll]="1" [circular]="true" [autoplayInterval]="3000" [responsiveOptions]="responsiveOptions">
+    <ng-template pTemplate="header">
+        <h2><strong class="text-warning">Estrenos</strong></h2>
+    </ng-template>
+    <ng-template let-pelicula pTemplate="item">
+        <div class="product-item">
+            <div class="product-item-content">
+                <div class="mb-3">
+                    <img src="assets/images/peliculas/{{pelicula.imagen}}" [alt]="pelicula.nombre" class="product-image" />
+                </div>
+                <div>
+                    <h4 class="mb-1">{{pelicula.nombre}}</h4>
+                    <h6 class="mt-0 mb-3">${{pelicula.precio}}</h6>
+                    <h6 class="mt-0 mb-3 text-success">{{pelicula.estado=='D' ? 'Disponible' : 'Inactivas'}}</h6>
+                    <i class="pi pi-box product-category-icon"></i><span class="product-category">{{pelicula.categoria.nombre}}</span>
+                    <div class="car-buttons mt-5">
+                        <p-button type="button" [routerLink]="['/reservaMovie']" styleClass="p-button p-button-rounded mr-2" pTooltip="Ver" tooltipPosition="top" icon="pi pi-eye"></p-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</p-carousel>

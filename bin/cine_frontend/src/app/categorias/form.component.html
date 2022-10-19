@@ -1,0 +1,46 @@
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-4">
+            
+        </div>
+        <div class="col-md-4">
+        <br>
+            <div class="card">
+                <div class="card-header">
+                    Agregar Categoria
+                </div>
+                <div class="card-body">
+                     <form #catForm = "ngForm">
+                    Nombre:  <input type="text" class="form-control" name="nombre" [(ngModel)]="categoria.nombre" #nombre="ngModel" required> <br>
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <button class="btn btn-success" role="button" (click)='create()' *ngIf="!categoria.id else elseBlock" [disabled]="!catForm.form.valid">Guardar</button>
+                            <ng-template #elseBlock>
+                                <button class="btn btn-warning" role="button" (click)="update()" [disabled]="!catForm.form.valid">Actualizar</button>
+                            </ng-template>
+        
+                        </div>
+                    </div>
+                    </form> 
+                </div>
+                <div class="card-footer text-muted">
+                    
+                </div>
+            </div>
+           
+        </div>
+        <div class="col-md-4">
+            
+        </div>
+
+    </div>
+    
+   
+</div>
+
+
+
+
+

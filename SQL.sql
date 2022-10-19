@@ -1,0 +1,1 @@
+INSERT INTO salas(codigo, numero_asientos) VALUES('10BA',10)

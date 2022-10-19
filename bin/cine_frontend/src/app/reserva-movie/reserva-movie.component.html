@@ -1,0 +1,146 @@
+<p-toast></p-toast>
+<div class="card">
+    <p-dataView #dv [value]="peliculas" [paginator]="true" [rows]="9" filterBy="nombre"
+        [sortField]="sortField" [sortOrder]="sortOrder" layout="grid">
+        <ng-template pTemplate="header">
+            <div class="flex flex-column md:flex-row md:justify-content-between">
+                <!--<p-dropdown [options]="sortOptions" [(ngModel)]="sortKey" placeholder="Sort By Price" (onChange)="onSortChange($event)" styleClass="mb-2 md:mb-0"></p-dropdown>-->
+                <span class="p-input-icon-left mb-2 md:mb-0">
+                    <i class="pi pi-search"></i>
+                    <input type="search" pInputText placeholder="Search by Name" (input)="dv.filter(getEventValue($event))">
+                </span>
+                <button pButton type="button"  icon="pi pi-bookmark" label="Ver Reserva" class="p-button-text text-success" (click)="verDetalleReserva()"></button>
+                <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+            </div>
+        </ng-template>
+        <ng-template let-pelicula pTemplate="listItem" let-index="rowIndex">
+            <div class="col-12">
+                <div class="product-list-item">
+                    <img [src]="'assets/images/peliculas/' + pelicula.imagen" [alt]="pelicula.nombre"/>
+                    <div class="product-list-detail">
+                        <div class="product-name">
+                           <!--<label for="nombre"> <b>Película: </b></label>-->
+                            {{pelicula.nombre}}</div>
+                        <div class="product-description">
+                           <!-- <label for="nombre"><b>Sinopsis: </b></label>-->
+                            <strong class="text-primary">{{pelicula.sinopsi}}</strong></div>
+                            <hr class="bg-dark">
+                            <h6>Proyección: </h6>
+                        <div class="product-description"><label for="nombre"><b>Desde: </b></label>{{pelicula.fecha_inicio | date: "dd/MM/yyyy"}}</div>   
+                        <div class="product-description"><label for="nombre"><b>Hasta: </b></label>{{pelicula.fecha_fin | date: "dd/MM/yyyy"}}</div>  
+                       <div class="product-description"><label for="nombre"><b>Hora:  </b></label> {{pelicula.hora_proyeccion}}</div>
+                        <div class="product-description"><label for="nombre"><b>Sala:  </b></label> {{pelicula.sala.codigo}}</div>
+                      
+                        <p-rating [ngModel]="pelicula.rating" [readonly]="true" [cancel]="false"></p-rating>
+                        <i class="pi pi-box product-category-icon"></i><span class="product-category">{{pelicula.categoria.nombre}}</span>
+                    </div>
+                    <div class="product-list-action">
+                        <span class="product-price">{{pelicula.precio | currency: 'USD'}}</span>
+                        <strong>Boletos:</strong>
+                    <p-inputNumber #boletos mode="decimal" [showButtons]="true" buttonLayout="vertical" spinnerMode="vertical"
+    decrementButtonClass="p-button-secondary" incrementButtonClass="p-button-success" incrementButtonIcon="pi pi-plus"></p-inputNumber>
+
+                        <p-button icon="pi pi-check" label="Agregar a Reserva" (onClick)="addToReserva(pelicula, boletos.value, $event)"></p-button>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template let-pelicula pTemplate="gridItem">
+            <div class="col-12 md:col-4">
+                <div class="product-grid-item card">
+                    <div class="product-grid-item-top">
+                        <div>
+                            <i class="pi pi-box product-category-icon"></i>
+                            <span class="product-category">{{pelicula.categoria.nombre}}</span>
+                        </div>
+                    </div>
+                    <div class="product-grid-item-content">
+                        <img [src]="'assets/images/peliculas/' + pelicula.imagen" [alt]="pelicula.nombre"/>
+                        <div class="product-name">{{pelicula.nombre}}</div>
+                        <div class="product-description">{{pelicula.sinopsi}}</div>
+                        <div class="product-description"><label for="nombre"><b>Desde:  </b></label> {{pelicula.fecha_inicio | date: "dd/MM/yyyy"}}</div>
+                        <div class="product-description"><label for="nombre"><b>Hasta:  </b></label> {{pelicula.fecha_fin | date: "dd/MM/yyyy"}}</div>
+                        <div class="product-description"><label for="nombre"><b>Sala:  </b></label> {{pelicula.sala.codigo}}</div>
+                        <div class="product-description"><label for="nombre"><b>Hora:  </b></label> {{pelicula.hora_proyeccion}}</div>
+                        
+                        
+                        
+                        <!--<p-rating [ngModel]="product.rating" [readonly]="true" [cancel]="false"></p-rating>-->
+                    </div>
+                    <div class="field col-12 md:col-3">
+                        <label for="horizontal"><Strong>Boletos:</Strong></label>
+                        <p-inputNumber #boletos  mode="decimal" [showButtons]="true" inputId="minmax-buttons" [min]="0" [max]="100"></p-inputNumber>
+                    </div>
+                    <div class="product-grid-item-bottom">
+                        <span class="product-price">{{pelicula.precio | currency: 'USD'}}</span>
+                        <p-button icon="pi pi-check" label="Reservar"(onClick)="addToReserva(pelicula, boletos.value, $event)"></p-button>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </p-dataView>
+</div>
+
+<p-dialog [(visible)]="detalleReservaDialog" [style]="{width: '550px'}" header="{{title}}" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="field">
+            <label for="nombre"><b>Cliente: </b>{{reserva.cliente.nombre}}</label>
+        </div>
+        <div class="formgrid grid row">
+            <div class="field col-6">
+                <label for="fecha"><b>Fecha: </b>{{reserva.fecha | date: "EEEE dd, MMM yyyy"}}</label>
+            </div>
+        </div>
+        <div class="formgrid grid row">
+            <div class="field col-6">
+                <label for="fecha"><b>Fecha Despacho: </b>{{reserva.fechaDespacho | date: "EEEE dd, MMM yyyy"}}</label>
+            </div>
+        </div>
+        <div class="formgrid grid row">
+            <div class="field col-6">
+                <label for="fecha"><b>Estado: </b>{{reserva.estado=='A' ? 'Activas' : 'Despachada'}}</label>
+            </div>
+        </div>
+        <div class="formgrid grid row">
+            <div class="field col-6">
+                <label for="id"><b>Número Reserva: </b>{{reserva.id}}</label>
+            </div>
+        </div>
+
+        <div class="formgrid grid row">
+            <table class="table table-bordered border-primary">
+                <thead>
+                    <th>Pelicula</th>
+                    <th>Precio</th>
+                    <th>Boletos</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of reserva.detalleReserva">
+                    <td>{{item.pelicula.nombre}}, {{item.pelicula.sinopsi}}</td>
+                    <td>{{item.pelicula.precio | currency: 'USD'}}</td>
+                    <td class="text-center">{{item.boletos}}</td>
+                    <td>{{item.boletos * item.pelicula.precio | currency: 'USD'}}</td>
+                    <td><button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger" (click)="quitarItem(item)"></button></td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="text-center">Total de la reserva</td>
+                    <td><b>{{reserva.total | currency: 'USD'}}</b></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </ng-template>
+
+    <!--Prueba-->
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Confirmar Reserva" icon="pi pi-check" class="p-button-text  text-success" (click)="saveReserva()" *ngIf="detalle.length > 0"></button>
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text text-danger" (click)="hideDialog()"></button>
+    </ng-template>
+
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
